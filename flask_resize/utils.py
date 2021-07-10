@@ -48,7 +48,7 @@ def parse_dimensions(dimensions):
     """
 
     if isinstance(dimensions, string_types):
-        dims = dimensions.split('x')
+        dims = dimensions.split("x")
         if len(dims) == 1:
             dims.append(None)
         dims = [d or None for d in dims]
@@ -64,7 +64,7 @@ def parse_dimensions(dimensions):
     return tuple((int(d) if d else None) for d in dims)
 
 
-def parse_rgb(v, include_number_sign=True):
+def parse_rgb(v, include_number_sign=True):  # TODO: Deprecated
     """Create a hex value color representation of the provided value
 
     Args:
@@ -81,12 +81,12 @@ def parse_rgb(v, include_number_sign=True):
             A full hex representation of the passed in RGB value
     """
     if isinstance(v, tuple):
-        v = ''.join('{:02x}'.format(d) for d in v)
-    if v.startswith('#'):
+        v = "".join("{:02x}".format(d) for d in v)
+    if v.startswith("#"):
         v = v[1:]
     if len(v) == 3:
-        v = u''.join(s + s for s in v)
-    return u'#' + v if include_number_sign else v
+        v = "".join(s + s for s in v)
+    return "#" + v if include_number_sign else v
 
 
 def parse_format(image_path, format=None):
@@ -109,13 +109,13 @@ def parse_format(image_path, format=None):
     if not format:
         format = os.path.splitext(image_path)[1][1:]
     format = format.upper()
-    if format in ('JPEG', 'JPG'):
+    if format in ("JPEG", "JPG"):
         format = constants.JPEG
     if format == constants.SVG:
         format = constants.PNG
     if format not in constants.SUPPORTED_OUTPUT_FILE_FORMATS:
         raise exc.UnsupportedImageFormatError(
-            "JPEG and PNG are the only supported output "
+            "WEBP, JPEG and PNG are the only supported output "
             "file formats at the moment."
         )
     return format
