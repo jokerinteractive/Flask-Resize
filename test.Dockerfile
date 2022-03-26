@@ -1,4 +1,4 @@
-ARG PYTHON_VERSION=3.6.3
+ARG PYTHON_VERSION=3.9.10
 FROM python:${PYTHON_VERSION}-alpine
 WORKDIR /app
 RUN apk add --no-cache\

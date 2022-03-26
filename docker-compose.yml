@@ -7,45 +7,6 @@ version: "3.4"
 services:
   redis:
     image: redis:3.2
-  py27:
-    image: flask-resize-test:py27
-    build:
-      context: .
-      dockerfile: ./test.Dockerfile
-      args:
-        PYTHON_VERSION: "2.7"
-    command: test
-    environment:
-      REDIS_HOST: redis
-    volumes:
-        - ./tests:/app/tests
-        - ./flask_resize:/app/flask_resize
-  py34:
-    image: flask-resize-test:py34
-    build:
-      context: .
-      dockerfile: ./test.Dockerfile
-      args:
-        PYTHON_VERSION: "3.4"
-    command: test
-    environment:
-      REDIS_HOST: redis
-    volumes:
-        - ./tests:/app/tests
-        - ./flask_resize:/app/flask_resize
-  py35:
-    image: flask-resize-test:py35
-    build:
-      context: .
-      dockerfile: ./test.Dockerfile
-      args:
-        PYTHON_VERSION: "3.5"
-    command: test
-    environment:
-      REDIS_HOST: redis
-    volumes:
-        - ./tests:/app/tests
-        - ./flask_resize:/app/flask_resize
   py36:
     image: flask-resize-test:py36
     build:
@@ -59,14 +20,53 @@ services:
     volumes:
         - ./tests:/app/tests
         - ./flask_resize:/app/flask_resize
+  py37:
+    image: flask-resize-test:py37
+    build:
+      context: .
+      dockerfile: ./test.Dockerfile
+      args:
+        PYTHON_VERSION: "3.7"
+    command: test
+    environment:
+      REDIS_HOST: redis
+    volumes:
+        - ./tests:/app/tests
+        - ./flask_resize:/app/flask_resize
+  py38:
+    image: flask-resize-test:py38
+    build:
+      context: .
+      dockerfile: ./test.Dockerfile
+      args:
+        PYTHON_VERSION: "3.8"
+    command: test
+    environment:
+      REDIS_HOST: redis
+    volumes:
+        - ./tests:/app/tests
+        - ./flask_resize:/app/flask_resize
+  py39:
+    image: flask-resize-test:py39
+    build:
+      context: .
+      dockerfile: ./test.Dockerfile
+      args:
+        PYTHON_VERSION: "3.9"
+    command: test
+    environment:
+      REDIS_HOST: redis
+    volumes:
+        - ./tests:/app/tests
+        - ./flask_resize:/app/flask_resize
   lint:
-    image: flask-resize-test:py36
+    image: flask-resize-test:py39
     command: lint
     build:
       context: .
       dockerfile: ./test.Dockerfile
       args:
-        PYTHON_VERSION: "3.6"
+        PYTHON_VERSION: "3.9"
     volumes:
         - ./tests:/app/tests
         - ./flask_resize:/app/flask_resize
