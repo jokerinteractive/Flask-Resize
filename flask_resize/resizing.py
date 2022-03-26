@@ -201,22 +201,20 @@ class ResizeTarget:
         if self.cache_store.exists(self.unique_key):
             logger.debug(f"Fetched from cache: {self.unique_key}")
             return self.unique_key
-        else:
-            msg = f"`{self.unique_key}` is not cached."
-            logger.debug(msg)
-            raise exc.CacheMiss(msg)
+        msg = f"`{self.unique_key}` is not cached."
+        logger.debug(msg)
+        raise exc.CacheMiss(msg)
 
     def get_path(self):
-        if self.image_store.exists(self.unique_key):
-            # As the generated image might've been created on another instance,
-            # we'll store the path in cache key here so we won't have to
-            # manually check the path again.
-            self.cache_store.add(self.unique_key)
-
-            logger.debug(f"Found non-cached image: {self.unique_key}")
-            return self.unique_key
-        else:
+        if not self.image_store.exists(self.unique_key):
             raise exc.ImageNotFoundError(self.unique_key)
+        # As the generated image might've been created on another instance,
+        # we'll store the path in cache key here so we won't have to
+        # manually check the path again.
+        self.cache_store.add(self.unique_key)
+
+        logger.debug(f"Found non-cached image: {self.unique_key}")
+        return self.unique_key
 
     def get_generated_image(self):
         return self.image_store.get(self.unique_key)
@@ -226,10 +224,9 @@ class ResizeTarget:
         if not self.source_image_relative_url:
             # Missing path means only a placeholder could be generated
             return constants.PNG
-        else:
-            fmt = os.path.splitext(self.source_image_relative_url)[1]
-            assert fmt.startswith(".")
-            return fmt[1:].upper()
+        fmt = os.path.splitext(self.source_image_relative_url)[1]
+        assert fmt.startswith(".")
+        return fmt[1:].upper()
 
     def _generate_impl(self):
         try:
@@ -237,8 +234,7 @@ class ResizeTarget:
         except exc.ImageNotFoundError:
             if self.use_placeholder:
                 source_data = self.generate_placeholder(
-                    f"Source image `{self.source_image_relative_url}` "
-                    f"not found."
+                    f"Source image `{self.source_image_relative_url}` not found."
                 )
             else:
                 raise
@@ -266,14 +262,17 @@ class ResizeTarget:
                 processor = pilkit.processors.ResizeToFill(**resize_to_fit_kw)
             img = processor.process(img)
 
-        options = {
-            "icc_profile": img.info.get("icc_profile"),
-        } if img.info.get("icc_profile") else {}
+        options = (
+            {
+                "icc_profile": img.info.get("icc_profile"),
+            }
+            if img.info.get("icc_profile")
+            else {}
+        )
 
         if self.format in [constants.WEBP, constants.JPEG]:
             options.update(
-                quality=int(self.quality),
-                progressive=self.progressive
+                quality=int(self.quality), progressive=self.progressive
             )
 
         if self.bg_color is not None:
@@ -303,21 +302,17 @@ class ResizeTarget:
                 self.image_store.save(self.unique_key, data)
             except Exception as e:
                 logger.info(
-                    f"Exception occurred - removing {self.unique_key} from "
-                    f"cache and image store. Exception was: {e}"
+                    f"Exception occurred - removing {self.unique_key} from cache and image store. Exception was: {e}"
                 )
 
                 try:
                     self.image_store.delete(self.unique_key)
                 except Exception as e2:
                     logger.warning(
-                        f"Another exception occurred while doing error cleanup"
-                        f" for: {self.unique_key}. The exception was: {e2}"
+                        f"Another exception occurred while doing error cleanup for: {self.unique_key}. The exception was: {e2}"
                     )
-                    pass
 
                 self.cache_store.remove(self.unique_key)
-
                 raise e
             else:
                 self.cache_store.add(self.unique_key)
