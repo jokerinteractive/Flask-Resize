@@ -173,6 +173,9 @@ class ResizeTarget:
         return format_to_ext(self.format)
 
     def _get_generate_unique_key_args(self):
+        source_image_dt = self.image_store.get_dt(
+            self.source_image_relative_url
+        )
         return [
             self.source_image_relative_url,
             self.format,
@@ -182,6 +185,7 @@ class ResizeTarget:
             "fill" if self.fill else "",
             "fill" if self.fill else "no-fill",
             "upscale" if self.upscale else "no-upscale",
+            source_image_dt,
             self.bg_color or "",
         ]
 

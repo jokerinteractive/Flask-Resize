@@ -1,4 +1,5 @@
 import os
+import pathlib
 
 from . import exc, utils
 from ._compat import PY2, boto3, botocore, string_types
@@ -76,6 +77,9 @@ class Storage:
         pass
 
     def get(self, relative_path):
+        raise NotImplementedError
+
+    def get_dt(self, relative_path):
         raise NotImplementedError
 
     def save(self, relative_path, bdata):
@@ -156,6 +160,20 @@ class FileStorage(Storage):
                 raise exc.ImageNotFoundError(*e.args)
             else:
                 raise
+
+    def get_dt(self, key):
+        """Get file modification datetime
+
+        Args:
+            key (str): The key / relative file path to get data for
+
+        Returns:
+            int: Timestamp file's modification
+        """
+        if not key:
+            raise exc.ImageNotFoundError()
+        path = self._get_full_path(key)
+        return pathlib.Path(path).stat().st_mtime
 
     def save(self, key, bdata):
         """Store binary file data at specified key
